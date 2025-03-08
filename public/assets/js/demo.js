@@ -1,5 +1,7 @@
 "use strict";
 
+
+const socket = io();
 const modalShowcase = `
 <!-- Demo Showcase -->
 <style>
@@ -267,65 +269,49 @@ var world_map = new jsVectorMap({
 
 //Chart
 
-let dataLine;
+if(statisticsChart) {
+	statisticsChart.destroy();
+}
+
+
 let myLegendContainer = document.getElementById("myChartLegend");
-
-fetch("http://localhost:5172/api/getdata").then(async response => {
-    if(!response.ok) {
-        throw new Error(`Response status: ${response.status}`) ;
-    }
-
-    const data = await response.json();
-    const output = data.data.map(e => e.iadata1)
-    var ctx = document.getElementById('statisticsChart').getContext('2d');
+var ctx = document.getElementById('statisticsChart').getContext('2d');
 
 var statisticsChart = new Chart(ctx, {
 	type: 'line',
 	data: {
-		labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 		datasets: [ {
-			label: "Current Data",
-			borderColor: '#f3545d',
-			pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
+			label: "LVMDP 1 Ia",
+			borderColor: '#ff0000 ',
+			pointBackgroundColor: 'rgba(255, 0, 0, 0.6)',
 			pointRadius: 0,
-			backgroundColor: 'rgba(243, 84, 93, 0.4)',
-			legendColor: '#f3545d',
+			backgroundColor: 'rgba(255, 0, 0, 0.4)',
+			legendColor: '#ff0000',
 			fill: true,
 			borderWidth: 2,
-			data: output
+			data: []
 		}, 
-		// {
-		// 	label: "New Visitors",
-		// 	borderColor: '#fdaf4b',
-		// 	pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
-		// 	pointRadius: 0,
-		// 	backgroundColor: 'rgba(253, 175, 75, 0.4)',
-		// 	legendColor: '#fdaf4b',
-		// 	fill: true,
-		// 	borderWidth: 2,
-		// 	data: [256, 230, 245, 287, 240, 250, 230, 295, 331, 431, 456, 521]
-		// }, {
-		// 	label: "Active Users",
-		// 	borderColor: '#177dff',
-		// 	pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
-		// 	pointRadius: 0,
-		// 	backgroundColor: 'rgba(23, 125, 255, 0.4)',
-		// 	legendColor: '#177dff',
-		// 	fill: true,
-		// 	borderWidth: 2,
-		// 	data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 900]
-		// },
-		// {
-		// 	label: "Active Users",
-		// 	borderColor: '#ff17b2',
-		// 	pointBackgroundColor: 'rgba(255, 23, 178, 0.6)',
-		// 	pointRadius: 0,
-		// 	backgroundColor: 'rgba(255, 23, 224, 0.4)',
-		// 	legendColor: '#ff17b2',
-		// 	fill: true,
-		// 	borderWidth: 2,
-		// 	data: [1000, 1000, 1000, 550, 530, 453, 380, 434, 568, 610, 700, 900]
-		// }
+		{
+			label: "LVMDP 1 Ib",
+			borderColor: '#ffb900',
+			pointBackgroundColor: 'rgba(255, 185, 0, 0.6)',
+			pointRadius: 0,
+			backgroundColor: 'rgba(255, 185, 0, 0.4)',
+			legendColor: '#ffb900',
+			fill: true,
+			borderWidth: 2,
+			data: []
+		}, {
+			label: "LVMDP 1 Ic",
+			borderColor: '#1bff00',
+			pointBackgroundColor: 'rgba(27, 255, 0, 0.6)',
+			pointRadius: 0,
+			backgroundColor: 'rgba(27, 255, 0, 0.4)',
+			legendColor: '##1bff00',
+			fill: true,
+			borderWidth: 2,
+			data: []
+		},
 		]
 	},
 	options : {
@@ -386,11 +372,34 @@ var statisticsChart = new Chart(ctx, {
 });
 
 
-	myLegendContainer.innerHTML = statisticsChart.generateLegend();
-}).catch(data => console.log(data))
+myLegendContainer.innerHTML = statisticsChart.generateLegend();
 
+// socket.on("data", (message) => {
 
+// 	console.log(socket.id)
+	
+// 	const data1 = statisticsChart.data.datasets[0].data;
+// 	const data2 = statisticsChart.data.datasets[1].data;
+// 	const data3 = statisticsChart.data.datasets[2].data;
+// 	const labels = statisticsChart.data.labels;
+// 	const date = new Date().toLocaleTimeString("en-US", {
+// 		hourCycle: "h24",
+// 	  });
 
+// 	if(data1.length >= 20) {
+// 		data1.shift();
+// 		data2.shift();
+// 		data3.shift();
+// 		labels.shift();
+// 	}
+// 		data1.push(message.ia1.toFixed(2))
+// 		data2.push(message.ib1.toFixed(2))
+// 		data3.push(message.ic1.toFixed(2))
+// 		labels.push(date)
+
+// 		statisticsChart.update()
+
+// })
 
 
 // bind onClick event to all LI-tags of the legend

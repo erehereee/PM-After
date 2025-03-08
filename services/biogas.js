@@ -1,36 +1,20 @@
 const nodes7 = require("nodes7");
 const conn = new nodes7();
 const { query } = require("../helper/pg");
-const {realTime} = require("./../helper/dataHandler")
-const { server } = require("./../services/app");
-const { socketServices } = require("./../services/websocket");
+const {realTime} = require("../helper/dataHandler")
+const { server } = require("./app");
+const { socketServices } = require("./websocket");
 const socket = new socketServices(server)
 
-const IPAddress = "172.25.192.49";
+const IPAddress = "172.25.192.51";
 const rack = 0;
 const slot = 1;
 const port = 102;
 let isConnected = false;
 
 const variables = {
-  ia1: "DB2,REAL0",
-  ib1: "DB2,REAL4",
-  ic1: "DB2,REAL8",
-  ia2: "DB2,WORD1008",
-  ib2: "DB2,WORD1010",
-  ic2: "DB2,WORD1012",
-  ia3: "DB2,REAL1764",
-  ib3: "DB2,REAL1768",
-  ic3: "DB2,REAL1772",
-  vab1: "DB2,REAL40",
-  vbc1: "DB2,REAL44",
-  vca1: "DB2,REAL48",
-  vab2: "DB2,WORD1048",
-  vbc2: "DB2,WORD1050",
-  vca2: "DB2,WORD1052",
-  vab3: "DB2,REAL1804",
-  vbc3: "DB2,REAL1808",
-  vca3: "DB2,REAL1812",
+  FT_101: "DB12,REAL26",
+  FT_102: "DB12,REAL58",
 };
 
 // Fungsi untuk memulai koneksi
@@ -82,9 +66,9 @@ const comPLC = () => {
       ];
 
       try {
-        await query(queryData, values);
-        realTime(socket, data, "data");
-        // console.log("Data inserted:", data);
+        // await query(queryData, values);
+        // realTime(socket, data, "data");
+        console.log("Data inserted:", data);
       } catch (err) {
         console.log("Failed to insert data:", err);
       }

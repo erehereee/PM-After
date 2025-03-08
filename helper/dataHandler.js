@@ -1,6 +1,5 @@
 const { query } = require("./pg");
 
-
 async function dataTest(req, res) {
     try {
         const queryData = `SELECT iadata1
@@ -16,9 +15,19 @@ async function dataTest(req, res) {
     }
 }
 
+const realTime = (ws, data, emit) => {
+    try {
+        ws.emit(emit, data);
+        console.log("Success to send Data of emit: " + emit)
+    } catch(err) {
+        console.log("Failed to send Data of emit: " + emit)
+    }
+}
+
 
 module.exports = {
-    dataTest
+    dataTest,
+    realTime
 }
 
 

@@ -1,8 +1,8 @@
+require("dotenv").config();
 const { pool } = require("../helper/pg");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-require("dotenv").config();
 
 const register = async (req, res) => {
   try {
