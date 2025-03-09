@@ -227,12 +227,53 @@ function isAuthor(roles = []) {
 }
 
 const testData = async (req, res) => {
-  return res.status(200).json({
-    message: {
-      name: req.user.name,
-      role: req.user.role,
-    },
-  });
+  try {
+    const { startDate, endDate, interval, select } = req.body;
+    const sDate = startDate.split("T")[0];
+    const sTime = startDate.split("T")[1];
+    const eDate = endDate.split("T")[0];
+    const eTime = endDate.split("T")[1];
+    const selData = select.toString();
+
+    let query = "";
+
+    if (!startDate || !endDate || !interval || select.length == 0) {
+      console.log(`Adding data failed. Please Fill the form.`);
+      return res
+        .status(422)
+        .json({ message: "Adding data failed. Please Fill the form." });
+    }
+
+    if (interval == "Seconds") {
+      query = `SELECT DISTINCT ON (DATE_TRUNC('second', timestamp)) 
+                ${selData},TO_CHAR(timestamp, 'YYYY-MM-DD HH24:MI:SS') as timestamp
+                FROM data
+                WHERE timestamp >= '${sDate} ${sTime}' 
+                AND timestamp < '${eDate} ${eTime}'
+                ORDER BY DATE_TRUNC('second', timestamp), timestamp;`;
+    } else if (interval == "Minutes") {
+      query = `SELECT DISTINCT ON (DATE_TRUNC('minute', timestamp)) 
+                ${selData},TO_CHAR(timestamp, 'YYYY-MM-DD HH24:MI:SS') as timestamp
+                FROM data
+                WHERE timestamp >= '${sDate} ${sTime}' 
+                AND timestamp < '${eDate} ${eTime}'
+                ORDER BY DATE_TRUNC('minute', timestamp), timestamp;`;
+    } else if (interval == "Hours") {
+      query = `SELECT DISTINCT ON (DATE_TRUNC('hour', timestamp)) 
+                ${selData},TO_CHAR(timestamp, 'YYYY-MM-DD HH24:MI:SS') as timestamp
+                FROM data
+                WHERE timestamp >= '${sDate} ${sTime}' 
+                AND timestamp < '${eDate} ${eTime}'
+                ORDER BY DATE_TRUNC('hour', timestamp), timestamp;`;
+    }
+
+    const data = await pool.query(query);
+
+    return res.status(200).json({ data: data.rows });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 function admin(req, res) {

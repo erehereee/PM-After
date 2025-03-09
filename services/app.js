@@ -1,14 +1,10 @@
 const express = require("express");
 const app = express();
-const http = require("http");
-const server = http.createServer(app);
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const cookieParser = require("cookie-parser");
 const { isAuthenToken } = require("../controller/controller");
 const router = require("../router/router");
-const { socketServices } = require("./websocket");
-// require("../controller/opc");
 
 app.set("view engine", "ejs");
 app.set("layout extractScripts", true);
@@ -19,18 +15,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(router);
 app.use(expressLayouts);
-
-console.log(path.join(__dirname, "..", "public"))
-
-// const socket = new socketServices(server);
-
-// setInterval(() => {
-//   const date = new Date().toLocaleString(["en-GB"], {
-//     timeZone: "Asia/Makassar",
-//     hour12: false,
-//   });
-//   socket.emit("dateTime", date);
-// }, 1000);
 
 app.get("/login", (req, res) => {
   if (req.cookies.accessToken) {
@@ -88,4 +72,4 @@ app.use((req, res) => {
   });
 });
 
-module.exports = {server};
+module.exports = { app };

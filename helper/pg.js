@@ -24,7 +24,6 @@ const checkConnection = async () => {
   }
 };
 
-
 const query = async (query, data) => {
   const results = await pool.query(query, data);
   return results;
@@ -32,20 +31,46 @@ const query = async (query, data) => {
 
 async function databaseMigration() {
   try {
-    const checkTablesAndConstraints = `
+    const cTables = `
       SELECT table_name
       FROM information_schema.tables
       WHERE table_name IN (
-        'data', 'users', 'tokeninvalid', 'session'
+        'data', 'users'
       );
     `;
 
-    const results = await pool.query(checkTablesAndConstraints);
-    console.log("Checking Migration Successfully.");
+    const results = await pool.query(cTables);
+    console.log("Checking databases...");
 
-    const existingTables = results[0].rows.map((row) => row.table_name);
+    const existingTables = results.rows.map((row) => row.table_name);
     const queries = [];
 
+    if (!existingTables.includes("data")) {
+      queries.push(`
+        CREATE TABLE public.data (
+        id bigint NOT NULL,
+        iadata1 real,
+        ibdata1 real,
+        icdata1 real,
+        iadata2 real,
+        ibdata2 real,
+        icdata2 real,
+        iadata3 real,
+        ibdata3 real,
+        icdata3 real,
+        vabdata1 real,
+        vbcdata1 real,
+        vcadata1 real,
+        vabdata2 real,
+        vbcdata2 real,
+        vcadata2 real,
+        vabdata3 real,
+        vbcdata3 real,
+        vcadata3 real,
+        "timestamp" timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+      );
+        `);
+    }
     if (!existingTables.includes("users")) {
       queries.push(`
         create table users (
@@ -57,22 +82,6 @@ async function databaseMigration() {
         created_at TIMESTAMP with TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
         `);
-    }
-    if (!existingTables.includes("tokeninvalid")) {
-      queries.push(`
-        create table tokeninvalid (
-        id serial primary key,
-        name varchar(50),
-        token varchar(255),
-        exp varchar(50),
-        created_at TIMESTAMP with TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      );
-        `);
-    }
-
-    if (queries.length > 0) {
-      await pool.query(queries.join(" "));
-      console.log("Database Updated");
     }
 
     const checkUsers = `
@@ -87,14 +96,21 @@ async function databaseMigration() {
       );
       const hashPasswordOP = await bcrypt.hash(process.env.BASIC_PASS_OP, 10);
       const insertUsers = `
-        INSERT INTO users (name, username, password, role)
-        VALUES
-          ('admin', 'administrator', $1, 'admin'),
-          ('operator', 'operator', $2, 'operator');
+      INSERT INTO users (name, username, password, role)
+      VALUES
+      ('admin', 'administrator', $1, 'admin'),
+      ('operator', 'operator', $2, 'operator');
       `;
       await pool.query(insertUsers, [hashPasswordAdmin, hashPasswordOP]);
       console.log("Create common user successfully.");
     }
+
+    if (queries.length > 0) {
+      await pool.query(queries.join(" "));
+      return true;
+    }
+
+    return false;
   } catch (error) {
     console.log("Error Migrating databases: " + error.message);
   }
@@ -104,5 +120,5 @@ module.exports = {
   pool,
   databaseMigration,
   checkConnection,
-  query
+  query,
 };
