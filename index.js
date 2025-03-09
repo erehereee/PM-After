@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const { app } = require("./services/app");
+const { server } = require("./services/app");
 const { databaseMigration, checkConnection } = require("./helper/pg");
 const { comPLC } = require("./services/s7");
 
@@ -18,8 +18,8 @@ const { comPLC } = require("./services/s7");
         console.log("Database Migration Successfully.");
       }
       console.log("Starting server...");
-      // await comPLC();
-      app.listen(process.env.SERVER_PORT, () =>
+      await comPLC();
+      server.listen(process.env.SERVER_PORT, () =>
         console.log(
           `Server listening on http://localhost:${process.env.SERVER_PORT}`
         )

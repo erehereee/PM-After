@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const http = require("http");
+const server = http.createServer(app);
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const cookieParser = require("cookie-parser");
@@ -72,4 +74,4 @@ app.use((req, res) => {
   });
 });
 
-module.exports = { app };
+module.exports = { server };

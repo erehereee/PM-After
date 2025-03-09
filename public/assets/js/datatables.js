@@ -14,7 +14,7 @@ form.addEventListener("submit", async function (e) {
         selectedOptions.push(checkbox.value);
       });
 
-    const url = "http://localhost:5173/api/user/test";
+    const url = "/api/user/test";
 
     const response = await fetch(url, {
       method: "POST",
